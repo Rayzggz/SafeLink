@@ -13,7 +13,7 @@ class JsonDict(dict):
     def __setattr__(self, attr: str, value):
         self[attr] = value
 
-def parse_data(engager_file: str, map_file: str) -> (RoadEngager, Map):
+def parse_data(engager_file: str, map_file: str) -> (list[RoadEngager], Map):
     path = Path(engager_file)
     path2 = Path(map_file)
     assert path.exists()

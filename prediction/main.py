@@ -10,15 +10,16 @@ class Prediction:
     map: Map
     
     def __init__(self) -> None:
-        self.engagers = [dict()] * 10
+        self.engagers = [dict()] * FRAME_RATE
 
-    def updateEngager(self, engager: list[RoadEngager]):
+    def update_engager(self, engager: list[RoadEngager]):
         self.engagers[self.frame % FRAME_RATE] = deepcopy(engager)
         self.frame += 1
     
     def __str__(self) -> str:
         return f"Prediction(frame={self.frame}, engagers={self.engagers}))"
     
-    def need
+    def need_update_map(self) -> bool:
+        return False
     def predict(self):
         pass
