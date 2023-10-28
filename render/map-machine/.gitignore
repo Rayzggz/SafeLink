@@ -1,0 +1,28 @@
+# Generated files
+
+dist/
+out/
+
+# Cache
+
+*.pyc
+cache/
+.coverage
+
+# Temporary files
+
+*.swp
+*.egg-info
+
+# Work files
+
+diffs
+work
+precommit.py
+
+.idea
+build
+temp
+venv*
+
+taginfo
