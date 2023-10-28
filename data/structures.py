@@ -19,4 +19,4 @@ class RoadType:
 
 class Map:
     reference_line: ReferenceLine
-    road_type: RoadType
+    t_road_type: RoadType
