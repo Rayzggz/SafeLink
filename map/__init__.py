@@ -43,12 +43,26 @@ def draw_car(pos):
 
 def main():
     clock = pygame.time.Clock()
-
+    car_speed = 5
+    car_x = WIDTH // 2 - CAR_WIDTH // 2
+    car_y = HEIGHT // 2 + ROAD_WIDTH // 4
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+        keys = pygame.key.get_pressed()
+
+        # Update car position based on key presses
+        if keys[pygame.K_LEFT]:
+            car_x -= car_speed
+        if keys[pygame.K_RIGHT]:
+            car_x += car_speed
+        if keys[pygame.K_UP]:
+            car_y -= car_speed
+        if keys[pygame.K_DOWN]:
+            car_y += car_speed
 
         screen.fill(WHITE)
 
@@ -61,10 +75,20 @@ def main():
         draw_dashed_line((WIDTH//2, 0), (WIDTH//2, HEIGHT))  # Vertical road marking
 
         # Draw a car
-        draw_car((WIDTH // 2 - CAR_WIDTH // 2, HEIGHT // 2 + ROAD_WIDTH // 4))
+        draw_car((car_x, car_y, CAR_WIDTH, CAR_WIDTH // 2))
+
+        origin = (400, 300)
+        for x in range(0, 800):
+            scaled_x = x / 10.0
+            y = int(origin[1] - (1.2313215 * (scaled_x ** 2) + 0.21312 * scaled_x + 1.5125))
+            pygame.draw.circle(screen, (255, 0, 0), (x, y), 2)
 
         pygame.display.flip()
         clock.tick(60)
+
+        #让car先前移动
+
+
 
 if __name__ == '__main__':
     main()
