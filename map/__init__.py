@@ -9,15 +9,18 @@ WIDTH, HEIGHT = 800, 600
 ROAD_WIDTH = 100
 DASH_LENGTH = 20
 DASH_SPACE = 20
-CAR_WIDTH, CAR_HEIGHT = 70, 50
+CAR_WIDTH, CAR_HEIGHT = 70, 60  # Still keeping this for car size adjustment
 
 # Create the screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# Load Car Image & Scale It
+car_image = pygame.image.load('car.png')
+car_image = pygame.transform.scale(car_image, (CAR_WIDTH, CAR_HEIGHT))
+
 # Define the colors
 WHITE = (255, 255, 255)
 GRAY = (50, 50, 50)
-RED = (255, 0, 0)
 
 def draw_road(start_pos, end_pos):
     pygame.draw.line(screen, GRAY, start_pos, end_pos, ROAD_WIDTH)
@@ -36,7 +39,7 @@ def draw_dashed_line(start_pos, end_pos):
         pygame.draw.line(screen, WHITE, start, end, 2)
 
 def draw_car(pos):
-    pygame.draw.rect(screen, RED, (*pos, CAR_WIDTH, CAR_HEIGHT))
+    screen.blit(car_image, pos)
 
 def main():
     clock = pygame.time.Clock()
