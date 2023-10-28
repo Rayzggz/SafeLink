@@ -2,6 +2,10 @@ class RoadEngager:
     speed: (float, float)
     position: (float, float, float)
     id: str
+    def __init__(self, position, speed, id):
+        self.position = position
+        self.speed = speed
+        self.id = id
 
 class ReferenceLine:
     s: float

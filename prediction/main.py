@@ -1,14 +1,15 @@
 from data import RoadEngager, Map
 from helpers import OK, INFO
 from scipy.optimize import least_squares
-
-FRAME_RATE = 20
+from concurrent.futures.thread import ThreadPoolExecutor
+from config import FRAME_RATE, CORE_NUM, UUID
 
 
 class Prediction:
     frame = 0
     engagers: dict[str, list[RoadEngager]] = {}
     map: Map
+    pool = ThreadPoolExecutor(CORE_NUM)
 
     def update_engager(self, engager: list[RoadEngager]):
         for e in engager:
@@ -24,30 +25,32 @@ class Prediction:
         return False
 
 
-    def _polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
-        return a * x ** 15 + b * x ** 14 + c * x ** 13 + d * x ** 12 + e * x ** 11 \
+    def cal_linear(self, x_data, y_data):
+        # 15 degree polynomial
+        def polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
+            return a * x ** 15 + b * x ** 14 + c * x ** 13 + d * x ** 12 + e * x ** 11 \
                 + f * x ** 10 + g * x ** 9 + h * x ** 8 + i * x ** 7 + j * x ** 6 + k * x ** 5 \
                 + l * x ** 4 + m * x ** 3 + n * x ** 2 + o * x + p
-    def _objective(params, x_data, y_data):
-        x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = params
-        return [(Prediction._polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - y) for x, y in
+        def objective(params):
+            x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = params
+            return [(polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - y) for x, y in
                     zip(x_data, y_data)]
 
-    def cal_linear(self, x_data, y_data):
-        initial_guess = [1] * 17  # 初始猜测值
-        result = least_squares(Prediction._objective(), initial_guess)
-
+        initial_guess = [1] * 17
+        result = least_squares(objective, initial_guess)
+        
         x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = result.x
         return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p
 
 
     def predict(self):
+        results = []
         for k, v in self.engagers.items():
             # 提取X和Y坐标数据
             x_data = [item['POSITION']['X'] for item in v if item is not None]
             y_data = [item['POSITION']['Y'] for item in v if item is not None]
-
-            self.cal_linear(x_data, y_data)
+            
+            results.append(self.pool.apply_async(self.cal_linear, (x_data, y_data)))
 
 
 
