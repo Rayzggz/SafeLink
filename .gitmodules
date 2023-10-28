@@ -1,3 +1,0 @@
-[submodule "render/map-machine"]
-	path = render/map-machine
-	url = https://github.com/enzet/map-machine.git
