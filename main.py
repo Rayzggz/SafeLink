@@ -39,11 +39,12 @@ if __name__ == "__main__":
         # re = a.predict()
 
         for e in engagers:
+            print(e)
             match e.type:
                 case "car":
-                    gen.add_car(e.position[0], e.position[1])
+                    gen.add_car(e.position.x, e.position.y)
                 case "bicycle":
-                    gen.add_bicycle(e.position[0], e.position[1])
+                    gen.add_bicycle(e.position.x, e.position.y)
                 case _:
                     raise KeyError(f"Unknown type {e.type}")
         gen.generate_img(str(counter))
