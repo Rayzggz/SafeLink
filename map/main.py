@@ -27,7 +27,7 @@ class MapLineGenerator:
         self.loc = [min_lon,min_lat,  max_lon,max_lat]
     def generate_img(self, file: str):
         (CACHE_PATH / f"{file}.osm").write_text(self.start + self.content + self.end)
-        mapper.render_map(parse_arguments(["main.py", "render", "-i", (CACHE_PATH / f"{file}.osm").absolute().__str__(), "--level=all", "--overlap=1", "-o", (CACHE_PATH / f"{file}.svg").absolute().__str__()]))
+        mapper.render_map(parse_arguments(["main.py", "render", "-i", (CACHE_PATH / f"{file}.osm").absolute().__str__(),  "-o", (CACHE_PATH / f"{file}.svg").absolute().__str__()]))
         assert (CACHE_PATH / f"{file}.svg").exists()
     def clear(self):
         self.content = ""
