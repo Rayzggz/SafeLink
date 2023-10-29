@@ -14,6 +14,7 @@ def svg_combine(base: Path, svg: Path) -> str:
     
     body = lambda x: re.search("""xmlns="http:\/\/www\.w3\.org\/2000\/svg" xmlns:ev="http:\/\/www\.w3\.org\/2001\/xml-events" xmlns:xlink="http:\/\/www\.w3\.org\/1999\/xlink">(.*)<\/svg>""", x, re.DOTALL)[0].removesuffix("</svg>")
     head = lambda x: """<?xml version="1.0" encoding="utf-8" ?>""" +re.search("""<svg(.*?)">""", x, re.DOTALL)[0]
+    bgc = re.search("""<rect fill="#eee" height="(.*)" width="(.*)" x="0.0" y="0.0" />""", svg, re.DOTALL)[0]
     tail = "</svg>"
 
     # Find the index where </g><text starts in the base
@@ -26,6 +27,8 @@ def svg_combine(base: Path, svg: Path) -> str:
     # Insert the svg data at the found index
     # combined = base[:index] + match.group(0)  + base[index:]
     # return combined
+    if bgc:
+        return head(base) + body(base) + body(svg).replace(bgc, "") + tail
     return head(base) + body(base) + body(svg) + tail
 
 
