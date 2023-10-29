@@ -70,8 +70,8 @@ class Prediction:
             # for checking collision
             it_speed = ([float(item.speed.x) for item in v if item is not None],\
                 [float(item.speed.y) for item in v if item is not None])
-
-            results[v[0]["id"]] = check_collision(me, (x_data, y_data), me_speed, it_speed)
+            results[v[0]["id"]] = [None] * 2
+            results[v[0]["id"]][0] = check_collision(me, (x_data, y_data), me_speed, it_speed)
 
             it = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
             # determine if it will me and it will crash within 5 sec
@@ -82,9 +82,9 @@ class Prediction:
                     - Prediction.polynomial_fit(t + i/100, *it[0])
                 lon = Prediction.polynomial_fit(t + i/100, *me[1])\
                     - Prediction.polynomial_fit(t + i/100, *it[1])
-                results[v[0]["id"]] = [abs(lat) * LAT_LON_TO_M < LIMIT and abs(lon) * LAT_LON_TO_M < LIMIT]
+                results[v[0]["id"]][0] = results[v[0]["id"]][0] or (abs(lat) * LAT_LON_TO_M < LIMIT and abs(lon) * LAT_LON_TO_M < LIMIT)
                 i += 1
-            results[v[0]["id"]] += [it]
+            results[v[0]["id"]][1] = it
         return me, results
         
 
