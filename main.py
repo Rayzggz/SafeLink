@@ -52,6 +52,7 @@ if __name__ == "__main__":
                 case _:
                     raise KeyError(f"Unknown type {e.type}")
         gen.generate_img(str(counter))
+        
         counter += 1
 
     print(a)

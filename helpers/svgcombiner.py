@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 
-def svgcombiner(base: Path, svg: Path):
+def svgcombiner(base: Path, svg: Path) -> str:
     with open(base, "r") as f:
         base = f.read()
     with open(svg, "r") as f:
