@@ -16,17 +16,16 @@ def svg_combine(base: Path, svg: Path) -> str:
     head = lambda x: """<?xml version="1.0" encoding="utf-8" ?>""" +re.search("""<svg(.*?)">""", x, re.DOTALL)[0]
     tail = "</svg>"
 
-    # # Find the index where </g><text starts in the base
+    # Find the index where </g><text starts in the base
     # index = base.find('</g><text')
-    # print(index)
     # match = re.search('(<g.*/g>)', svg, re.DOTALL)
 
     # if match is None:
     #     index = base.find('/><text')
     #     match = re.search('(<path.*/>)', svg, re.DOTALL)
-    # # Insert the svg data at the found index
+    # Insert the svg data at the found index
     # combined = base[:index] + match.group(0)  + base[index:]
-
+    # return combined
     return head(base) + body(base) + body(svg) + tail
 
 

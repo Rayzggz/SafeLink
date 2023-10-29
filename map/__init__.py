@@ -1,1 +1,1 @@
-from map.main import MapGenerator, MapLineGenerator
+from map.main import MapGenerator
