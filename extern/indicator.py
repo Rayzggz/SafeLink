@@ -2,9 +2,9 @@
 class Indicator:
     def start(self):
         pass
-    def get_position(self) -> (float, float, float):
-        return 0, 0, 0
-    def get_motion(self) -> (float, float):
-        return 0, 0
+    def get_position(self) -> (float, float):
+        return -83.009, 40.006
+    def get_speed(self) -> float:
+        return 0
     def is_shutdown(self) -> bool:
         return False
