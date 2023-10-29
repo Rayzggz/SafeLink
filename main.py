@@ -8,8 +8,7 @@ from pathlib import Path
 # delete all in folder
 from shutil import rmtree
 from data import JsonDict
-from helpers import svg_combine, svg_to_gif
-counter = 0
+from helpers import svg_combine, svg_to_gif, INFO, WARNING, OK
 
 if __name__ == "__main__":
     print("start")
@@ -25,12 +24,12 @@ if __name__ == "__main__":
     gen.generate_base_map()
     base_img = CACHE_PATH / "base.svg"
 
-    for _ in range(12):
+    for i in range(12):
         gen.clear()
         with open(Path("./data/sample_car.json"), "r") as f:
             with open(Path("./data/sample_bike.json"), "r") as f1:
                 #!!!
-                engagers = [json.load(f, object_hook=JsonDict)[counter], json.load(f1, object_hook=JsonDict)[counter]]
+                engagers = [json.load(f, object_hook=JsonDict)[i], json.load(f1, object_hook=JsonDict)[i]]
         curr = indicator.get_position()
         motion = indicator.get_speed()
         gen.add_car(curr[0], curr[1])
@@ -40,12 +39,14 @@ if __name__ == "__main__":
         a.update_engager(engagers + [RoadEngager(curr, motion, UUID, "car", engagers[0].time_stamp).to_dict()])
         predictions = a.predict()
         gen.add_car(curr[0], curr[1])
+        WARNING(engagers)
         for e in engagers:
+            INFO(f"handling {e['id']} for {i}")
             if predictions is not None:
                 params = predictions[1][e["id"]][1]
                 ids = []
-                for i in range(3):
-                    ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + i/100, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + i/100, *params[1])))
+                for j in range(3):
+                    ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[1])))
                 gen.add_line(ids)
             match e["type"]:
                 case "car":
@@ -54,12 +55,10 @@ if __name__ == "__main__":
                     gen.add_bicycle(e.position.x, e.position.y)
                 case _:
                     raise KeyError(f"Unknown type {e.type}")
-        gen.generate_img(f"{counter}")
-        f = svg_combine(base_img, CACHE_PATH / f"{counter}.svg")
-        with open(CACHE_PATH / f"{counter}.svg", "w") as f1:
+        gen.generate_img(f"{i}")
+        f = svg_combine(base_img, CACHE_PATH / f"{i}.svg")
+        with open(CACHE_PATH / f"{i}.svg", "w") as f1:
             f1.write(f)
-        counter += 1
-
-    print(a)
     svg_to_gif(CACHE_PATH, CACHE_PATH)
+    OK("Finished")
     

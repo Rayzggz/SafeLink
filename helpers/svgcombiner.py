@@ -43,7 +43,6 @@ def svg_to_gif(svg_paths, gif_path):
         if not ("line" in i or "base" in i):
             new_frame = Image.open(CACHE_PATH / i)
             frames.append(new_frame)
-    print(frames)
 
     # Save into a GIF file that loops forever
     frames[0].save(CACHE_PATH / 'png_to_gif.gif', format='GIF',

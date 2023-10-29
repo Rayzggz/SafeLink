@@ -45,7 +45,6 @@ class MapGenerator:
     
     def generate_base_map(self):
         mapper.render_map(parse_arguments(["main.py", "render", "-b", f"{self.loc[0]},{self.loc[1]},{self.loc[2]},{self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{(CACHE_PATH / 'base.svg').absolute().__str__()}"]))
-        print(" ".join(["main.py", "render", "-b", f"{self.loc[0]},{self.loc[1]},{self.loc[2]},{self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{(CACHE_PATH / 'base.svg').absolute().__str__()}"]))
         assert (CACHE_PATH / "base.svg").exists()
     def clear(self):
         self.content = ""

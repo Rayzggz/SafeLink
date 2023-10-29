@@ -84,7 +84,6 @@ class Prediction:
                     - Prediction.polynomial_fit(t + i/100, *it[1])
                 results[v[0]["id"]] = [abs(lat) * LAT_LON_TO_M < LIMIT and abs(lon) * LAT_LON_TO_M < LIMIT]
                 i += 1
-            print(results)
             results[v[0]["id"]] += [it]
         return me, results
         
