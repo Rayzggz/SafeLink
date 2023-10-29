@@ -5,6 +5,9 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from config import FRAME_RATE, CORE_NUM, UUID
 
 
+LIMIT = 2
+LAT_LON_TO_M = 111320
+
 class Prediction:
     frame = 0
     engagers: dict[str, list[RoadEngager]] = {}
@@ -23,42 +26,50 @@ class Prediction:
     def need_update_map(self) -> bool:
         return False
 
+    # 15 degree polynomial
+    def polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
+        return a * x ** 15 + b * x ** 14 + c * x ** 13 + d * x ** 12 + e * x ** 11 \
+            + f * x ** 10 + g * x ** 9 + h * x ** 8 + i * x ** 7 + j * x ** 6 + k * x ** 5 \
+            + l * x ** 4 + m * x ** 3 + n * x ** 2 + o * x + p
 
     def cal_linear(self, x_data, y_data):
-        # 15 degree polynomial
-        def polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
-            return a * x ** 15 + b * x ** 14 + c * x ** 13 + d * x ** 12 + e * x ** 11 \
-                + f * x ** 10 + g * x ** 9 + h * x ** 8 + i * x ** 7 + j * x ** 6 + k * x ** 5 \
-                + l * x ** 4 + m * x ** 3 + n * x ** 2 + o * x + p
         def objective(params):
             x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = params
-            return [(polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - y) for x, y in
+            return [(Prediction.polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - y) for x, y in
                     zip(x_data, y_data)]
 
         initial_guess = [1] * 17
         result = least_squares(objective, initial_guess)
         
-        x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = result.x
+        _, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = result.x
         return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p
 
 
-    def predict(self):
-        pass
-        # results = []
-        # for k, v in self.engagers.items():
-        #     # 提取X和Y坐标数据
-        #     x_data = [item['POSITION']['X'] for item in v if item is not None]
-        #     y_data = [item['POSITION']['Y'] for item in v if item is not None]
-            
-        #     results.append(self.pool.apply_async(self.cal_linear, (x_data, y_data)))
+    def predict(self) ->tuple[list[tuple], dict[str, bool]]:
+        results = ([],{})
+        x_data = [item.position.x for item in self.engagers[UUID] if item is not None]
+        x_time = [item.time_stamp for item in self.engagers[UUID] if item is not None]
+        y_data = [item.position.y for item in self.engagers[UUID] if item is not None]
+        y_time = [item.time_stamp for item in self.engagers[UUID] if item is not None]
+        me = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
+        
 
-
-
-
-
-
-
-
-
-
+        for _, v in self.engagers.items():
+            if v.id == UUID:
+                continue
+            x_data = [item.position.x for item in v if item is not None]
+            x_time = [item.time_stamp for item in v if item is not None]
+            y_data = [item.position.y for item in v if item is not None]
+            y_time = [item.time_stamp for item in v if item is not None]
+            it = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
+            # determine if it will me and it will crash within 5 sec
+            for i in range(0, 5, step=0.1):# m 111320
+                lat = Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *me[0])\
+                    - Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *it[0])
+                lon = Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *me[1])\
+                    - Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *it[1])
+                results[1][v.id] = lat * LAT_LON_TO_M < LIMIT and lon * LAT_LON_TO_M < LIMIT
+        results[0] = me
+        return results
+        
 
