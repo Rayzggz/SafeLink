@@ -1,2 +1,2 @@
 from helpers.log_helper import OK, INFO, WARNING, FAIL
-# from svgcombiner import svgcombiner
+from helpers.svgcombiner import svg_combine, svg_to_gif
