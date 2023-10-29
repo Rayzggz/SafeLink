@@ -23,7 +23,7 @@ class MapGenerator:
         self.start = f"""<?xml version='1.0' encoding='UTF-8'?>
 <osm version='0.6' generator='JOSM'>
 <bounds minlat='{min_lat}' minlon='{min_lon}' maxlat='{max_lat}' maxlon='{max_lon}' origin='CGImap 0.8.8 (1915366 spike-06.openstreetmap.org)' />"""
-        self.loc = [min_lat, min_lon, max_lat, max_lon]
+        self.loc = [min_lon,min_lat,  max_lon,max_lat]
 
     def save_to(self, file: str):
         f = Path(file)

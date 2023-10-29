@@ -3,7 +3,7 @@ class Indicator:
     def start(self):
         pass
     def get_position(self) -> (float, float):
-        return -83.009, 40.006
+        return 40.006, -83.009
     def get_speed(self) -> float:
         return 0
     def is_shutdown(self) -> bool:
