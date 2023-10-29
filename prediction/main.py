@@ -6,7 +6,7 @@ from config import FRAME_RATE, CORE_NUM, UUID
 from prediction.check_collision import check_collision
 
 
-LIMIT = 2
+LIMIT = 10
 LAT_LON_TO_M = 111320
 
 class Prediction:
@@ -28,31 +28,30 @@ class Prediction:
         return False
 
     # 15 degree polynomial
-    def polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p):
-        return a * x ** 15 + b * x ** 14 + c * x ** 13 + d * x ** 12 + e * x ** 11 \
-            + f * x ** 10 + g * x ** 9 + h * x ** 8 + i * x ** 7 + j * x ** 6 + k * x ** 5 \
-            + l * x ** 4 + m * x ** 3 + n * x ** 2 + o * x + p
+    def polynomial_fit(x, a, b, c, d):
+        return a * x ** 3 + b * x ** 2 + c * x + d
 
     def cal_linear(self, x_data, y_data):
         def objective(params):
-            x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = params
-            return [(Prediction.polynomial_fit(x, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) - y) for x, y in
+            _, a, b, c, d = params
+            return [(Prediction.polynomial_fit(x, a, b, c, d) - y) for x, y in
                     zip(x_data, y_data)]
 
-        initial_guess = [1] * 17
+        initial_guess = [1] * 5
         result = least_squares(objective, initial_guess)
         
-        _, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = result.x
-        return a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p
+        _, a, b, c, d = result.x
+        return a, b, c, d
 
 
-    def predict(self) ->tuple[list[tuple], dict[str, bool]]:
+    def predict(self) ->tuple[tuple[tuple], dict[str, list]]:
+        if self.frame <= 5:
+            return None
         results = {}
-        print(self.engagers)
         x_data = [float(item["position"]["x"]) for item in self.engagers[UUID] if item is not None]
-        x_time = [int(item["time_stamp"]) for item in self.engagers[UUID] if item is not None]
+        x_time = [int(item["time_stamp"][-4:]) / 100 for item in self.engagers[UUID] if item is not None]
         y_data = [float(item["position"]["y"]) for item in self.engagers[UUID] if item is not None]
-        y_time = [int(item["time_stamp"]) for item in self.engagers[UUID] if item is not None]
+        y_time = [int(item["time_stamp"][-4:]) / 100 for item in self.engagers[UUID] if item is not None]
         me = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
 
         # for checking collision
@@ -64,29 +63,29 @@ class Prediction:
             if len(v) == 0 or v[0]["id"] == UUID:
                 continue
             x_data = [float(item.position.x) for item in v if item is not None]
-            x_time = [int(item.time_stamp) for item in v if item is not None]
+            x_time = [int(item.time_stamp[-4:])/100 for item in v if item is not None]
             y_data = [float(item.position.y) for item in v if item is not None]
-            y_time = [int(item.time_stamp) for item in v if item is not None]
+            y_time = [int(item.time_stamp[-4:])/100 for item in v if item is not None]
 
             # for checking collision
             it_speed = ([float(item.speed.x) for item in v if item is not None],\
                 [float(item.speed.y) for item in v if item is not None])
 
-            if check_collision(me, (x_data, y_data), me_speed, it_speed):
-                results[v[0]["id"]] = True
-                continue
+            results[v[0]["id"]] = check_collision(me, (x_data, y_data), me_speed, it_speed)
 
             it = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
             # determine if it will me and it will crash within 5 sec
             i = 1
-            t = int([a for a in self.engagers[UUID] if a is not None][-1]["time_stamp"])
+            t = int([a for a in self.engagers[UUID] if a is not None][-1]["time_stamp"][-4:])/100
             while i <= 3:
-                lat = Prediction.polynomial_fit(t + i, *me[0])\
-                    - Prediction.polynomial_fit(t + i, *it[0])
-                lon = Prediction.polynomial_fit(t + i, *me[1])\
-                    - Prediction.polynomial_fit(t + i, *it[1])
-                results[v[0]["id"]] = lat * LAT_LON_TO_M < LIMIT and lon * LAT_LON_TO_M < LIMIT
-                i += 0.1
+                lat = Prediction.polynomial_fit(t + i/100, *me[0])\
+                    - Prediction.polynomial_fit(t + i/100, *it[0])
+                lon = Prediction.polynomial_fit(t + i/100, *me[1])\
+                    - Prediction.polynomial_fit(t + i/100, *it[1])
+                results[v[0]["id"]] = [abs(lat) * LAT_LON_TO_M < LIMIT and abs(lon) * LAT_LON_TO_M < LIMIT]
+                i += 1
+            print(results)
+            results[v[0]["id"]] += [it]
         return me, results
         
 

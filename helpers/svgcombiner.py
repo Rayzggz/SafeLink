@@ -14,10 +14,12 @@ def svg_combine(base: Path, svg: Path) -> str:
 
     # Find the index where </g><text starts in the base
     index = base.find('</g><text')
-
+    print(index)
     match = re.search('(<g.*/g>)', svg, re.DOTALL)
 
-
+    if match is None:
+        index = base.find('/><text')
+        match = re.search('(<path.*/>)', svg, re.DOTALL)
     # Insert the svg data at the found index
     combined = base[:index] + match.group(0)  + base[index:]
 
