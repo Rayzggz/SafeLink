@@ -2,6 +2,8 @@ import re
 from pathlib import Path
 import os
 
+import cairosvg
+
 from config import CACHE_PATH
 from PIL import Image
 import glob
@@ -29,14 +31,15 @@ def svg_combine(base: Path, svg: Path, isAlert: bool=False) -> str:
 
 def svg_to_gif(svg_paths, gif_path):
     
-    os.system("cd " + str(CACHE_PATH.absolute()) + " && for file in *.svg; do inkscape \"$file\" -o \"${file%svg}png\"; done")
+    # os.system("cd " + str(CACHE_PATH.absolute()) + " && for file in *.svg; do inkscape \"$file\" -o \"${file%svg}png\"; done")
 
     # Create the frames
     frames: list[Image.Image] = []
-    imgs = glob.glob("*.png", root_dir=svg_paths)
+    imgs = glob.glob("*.svg", root_dir=svg_paths)
     for i in imgs:
         if not ("line" in i or "base" in i):
-            new_frame = Image.open(CACHE_PATH / i)
+            cairosvg.svg2png(url=str((CACHE_PATH / i).absolute()), write_to=str((CACHE_PATH / i.replace(".svg", ".png")).absolute()), scale=3)
+            new_frame = Image.open(CACHE_PATH / i.replace(".svg", ".png"))
             frames.append(new_frame)
 
     # Save into a GIF file that loops forever
