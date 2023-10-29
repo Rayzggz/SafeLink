@@ -24,6 +24,11 @@ if __name__ == "__main__":
     gen.generate_base_map()
     base_img = CACHE_PATH / "base.svg"
 
+    with open(Path("./data/sample_car.json"), "r") as f:
+        with open(Path("./data/sample_.json"), "r") as f:
+            #!!!
+            engagers = [json.load(f, object_hook=JsonDict)[counter]]
+
     while not indicator.is_shutdown():
         gen.clear()
         curr = indicator.get_position()

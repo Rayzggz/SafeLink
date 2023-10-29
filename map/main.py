@@ -17,13 +17,13 @@ class MapGenerator:
     loc = []
     def add_bicycle(self, lat, lon):
         self.id -= 1
-        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='bicycle' v='yes' /></node>"""
+        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='bicycle' v='yes' /> <tag k='level' v='50' /></node>"""
     def add_point(self, lat, lon):
         self.id -= 1
-        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}' />"""
+        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'> <tag k='level' v='50' /></node>"""
     def add_car(self, lat, lon):
         self.id -= 1
-        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' /></node>"""
+        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' /> <tag k='level' v='50' /></node>"""
 
     def __init__(self, min_lat, min_lon, max_lat, max_lon) -> None:
         self.start = f"""<?xml version='1.0' encoding='UTF-8'?>
@@ -38,11 +38,11 @@ class MapGenerator:
 
     def generate_img(self, file: str):
         (CACHE_PATH / f"{file}.osm").write_text(self.start + self.content + self.end)
-        mapper.render_map(parse_arguments(["map_machine", "render", "-i", (CACHE_PATH / f"{file}.osm").absolute(), "--level=50", "--overlap=0", "-o", (CACHE_PATH / f"{file}.svg").absolute()]))
+        mapper.render_map(parse_arguments(["main.py", "render", "-i", (CACHE_PATH / f"{file}.osm").absolute().__str__(), "--level=50", "--overlap=0", "-o", (CACHE_PATH / f"{file}.svg").absolute().__str__()]))
         assert (CACHE_PATH / f"{file}.svg").exists()
     
     def generate_base_map(self):
-        mapper.render_map(parse_arguments(["map_machine", "render", "-b", f"{self.loc[0]}, {self.loc[1]}, {self.loc[2]}, {self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{CACHE_PATH / 'base.svg'}"]))
+        mapper.render_map(parse_arguments(["main.py", "render", "-b", f"{self.loc[0]},{self.loc[1]},{self.loc[2]},{self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{(CACHE_PATH / 'base.svg').absolute().__str__()}"]))
         assert (CACHE_PATH / "base.svg").exists()
     def clear(self):
         self.content = ""
