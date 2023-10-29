@@ -11,4 +11,4 @@ class RoadEngager:
         self.type = type
         self.time_stamp = time_stamp
     def to_dict(self):
-        return {"position":{"x": self.position[0], "y": self.position[1]}, "speed":self.speed, "id":self.id, "type":self.type, "time_stamp":self.time_stamp}
+        return {"position":{"x": self.position[0], "y": self.position[1]}, "speed":{"x": self.speed[0], "y": self.speed[1]}, "id":self.id, "type":self.type, "time_stamp":self.time_stamp}

@@ -72,7 +72,7 @@ class Prediction:
             it_speed = ([float(item.speed.x) for item in v if item is not None],\
                 [float(item.speed.y) for item in v if item is not None])
 
-            if check_collision(me, (x_data, y_data), me_speed, it_speed, it_speed):
+            if check_collision(me, (x_data, y_data), me_speed, it_speed):
                 results[v[0]["id"]] = True
                 continue
 

@@ -25,8 +25,8 @@ if __name__ == "__main__":
     gen.generate_base_map()
     base_img = CACHE_PATH / "base.svg"
 
-    gen.clear()
     for _ in range(12):
+        gen.clear()
         with open(Path("./data/sample_car.json"), "r") as f:
             with open(Path("./data/sample_bike.json"), "r") as f1:
                 #!!!
@@ -38,8 +38,8 @@ if __name__ == "__main__":
         # engagers = conn.recv(1/FRAME_RATE)
         # print(engagers)
         a.update_engager(engagers + [RoadEngager(curr, motion, UUID, "car", engagers[0].time_stamp).to_dict()])
-        # print(a.predict())
-
+        print(a.predict())
+        gen.add_car(curr[0], curr[1])
         for e in engagers:
             print(e)
             match e.type:
