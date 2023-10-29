@@ -3,6 +3,7 @@ from helpers import OK, INFO
 from scipy.optimize import least_squares
 from concurrent.futures.thread import ThreadPoolExecutor
 from config import FRAME_RATE, CORE_NUM, UUID
+from prediction.check_collision import check_collision
 
 
 LIMIT = 2
@@ -53,6 +54,10 @@ class Prediction:
         y_data = [float(item["position"]["y"]) for item in self.engagers[UUID] if item is not None]
         y_time = [int(item["time_stamp"]) for item in self.engagers[UUID] if item is not None]
         me = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
+
+        # for checking collision
+        me_speed = ([float(item["speed"]["x"]) for item in self.engagers[UUID] if item is not None],\
+            [float(item["speed"]["y"]) for item in self.engagers[UUID] if item is not None])
         
 
         for _, v in self.engagers.items():
@@ -62,6 +67,15 @@ class Prediction:
             x_time = [int(item.time_stamp) for item in v if item is not None]
             y_data = [float(item.position.y) for item in v if item is not None]
             y_time = [int(item.time_stamp) for item in v if item is not None]
+
+            # for checking collision
+            it_speed = ([float(item.speed.x) for item in v if item is not None],\
+                [float(item.speed.y) for item in v if item is not None])
+
+            if check_collision(me, (x_data, y_data), me_speed, it_speed, it_speed):
+                results[v[0]["id"]] = True
+                continue
+
             it = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
             # determine if it will me and it will crash within 5 sec
             i = 1
