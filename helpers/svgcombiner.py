@@ -18,9 +18,9 @@ def svg_combine(base: Path, svg: Path) -> str:
 
     match = re.search('(<g.*/g>)', svg, re.DOTALL)
 
-    match.group(0)
+
     # Insert the svg data at the found index
-    combined = base[:index] + svg  + base[index:]
+    combined = base[:index] + match.group(0)  + base[index:]
 
     return combined
 
