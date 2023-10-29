@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
 
     for i in range(12):
+        gen.clear()
         engagers = [a[i] for a in mock_engager_data]
         curr = indicator.get_position()
         motion = indicator.get_speed()

@@ -14,7 +14,7 @@ def svg_combine(base: Path, svg: Path, isAlert: bool=False) -> str:
     
     body = lambda x: re.search("""xmlns="http:\/\/www\.w3\.org\/2000\/svg" xmlns:ev="http:\/\/www\.w3\.org\/2001\/xml-events" xmlns:xlink="http:\/\/www\.w3\.org\/1999\/xlink">(.*)<\/svg>""", x, re.DOTALL)[0].removesuffix("</svg>")
     head = lambda x: """<?xml version="1.0" encoding="utf-8" ?>""" +re.search("""<svg(.*?)">""", x, re.DOTALL)[0]
-    bgc = re.search("""<rect fill="#eee" height="(.*)" width="(.*)" x="0.0" y="0.0" />""", svg, re.DOTALL)[0]
+    bgc = re.search("""<rect fill="#eee" height="(.*)" width="(.*)" x="0.0" y="0.0" />""", svg, re.DOTALL)
     tail = "</svg>"
 
     alert = """<path class="st0" d="M103.2,62.5c0-24.2-20.4-43.7-45.6-43.7S11.9,38.3,11.9,62.5s20.4,43.7,45.6,43.7S103.2,86.6,103.2,62.5
@@ -24,7 +24,7 @@ def svg_combine(base: Path, svg: Path, isAlert: bool=False) -> str:
 	V73.6z M53.1,90.3c0.2,2.7,1.7,4.1,4.4,4.1c2.7,0,4.2-1.4,4.4-4.1c-0.2-2.7-1.7-4.2-4.4-4.4C54.8,86.1,53.4,87.6,53.1,90.3
 	L53.1,90.3z" fill="#FC5143"/>"""
 
-    return head(base) + body(base) + body(svg).replace(bgc, "") if bgc else body(svg) + alert if isAlert else "" + tail
+    return head(base) + body(base) + (body(svg).replace(bgc[0], "") if bgc else body(svg)) + (alert if isAlert else "") + tail
 
 
 def svg_to_gif(svg_paths, gif_path):
