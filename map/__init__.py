@@ -1,0 +1,1 @@
+from map.main import MapGenerator
