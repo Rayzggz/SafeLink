@@ -10,8 +10,10 @@ from shutil import rmtree
 from data import JsonDict
 import glob
 from helpers import svg_combine, svg_to_gif, INFO, WARNING, OK, FAIL
+from data import generate_demo
 
 if __name__ == "__main__":
+    generate_demo()
     OK("start")
     CACHE_PATH.mkdir(exist_ok=True)
     rmtree(CACHE_PATH)
@@ -34,9 +36,9 @@ if __name__ == "__main__":
             mock_engager_data.append(json.load(f, object_hook=JsonDict))
 
 
-    for i in range(12):
+    for i in range(20):
         gen.clear()
-        engagers = [a[i] for a in mock_engager_data]
+        engagers = [a[i] for a in mock_engager_data if len(a) > i]
         curr = indicator.get_position()
         motion = indicator.get_speed()
         gen.add_car(curr[0], curr[1])
@@ -56,8 +58,8 @@ if __name__ == "__main__":
                     FAIL(f"Alarm! This vechice will crash with {e['type']}({e['id']})")
                     crash = True
                 ids = []
-                for j in range(4):
-                    ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[1])))
+                for j in range(10):
+                    ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/1000, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/1000, *params[1])))
                 gen.add_line(ids)
             match e["type"]:
                 case "car":
