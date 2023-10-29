@@ -25,7 +25,7 @@ class MapGenerator:
         self.id -= 1
         self.content += f"""<way id='{self.id}' action='modify' visible='true'>
     {"".join([f"<nd ref='{a}' />" for a in points])}
-    <tag k='footway' v='sidewalk' /><tag k='highway' v='footway' /></way>"""
+    <tag k='colour' v='purple' /><tag k='footway' v='sidewalk' /><tag k='highway' v='footway' /></way>"""
         return self.id
     def __init__(self, min_lat, min_lon, max_lat, max_lon) -> None:
         self.start = f"""<?xml version='1.0' encoding='UTF-8'?>

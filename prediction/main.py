@@ -6,7 +6,7 @@ from config import FRAME_RATE, CORE_NUM, UUID
 from prediction.check_collision import check_collision
 
 
-LIMIT = 10
+LIMIT = 2
 LAT_LON_TO_M = 111320
 
 class Prediction:
@@ -45,7 +45,7 @@ class Prediction:
 
 
     def predict(self) ->tuple[tuple[tuple], dict[str, list]]:
-        if self.frame <= 5:
+        if self.frame <= 3:
             return None
         results = {}
         x_data = [float(item["position"]["x"]) for item in self.engagers[UUID] if item is not None]

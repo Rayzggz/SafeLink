@@ -8,10 +8,10 @@ from pathlib import Path
 # delete all in folder
 from shutil import rmtree
 from data import JsonDict
-from helpers import svg_combine, svg_to_gif, INFO, WARNING, OK
+from helpers import svg_combine, svg_to_gif, INFO, WARNING, OK, FAIL
 
 if __name__ == "__main__":
-    print("start")
+    OK("start")
     CACHE_PATH.mkdir(exist_ok=True)
     rmtree(CACHE_PATH)
     a = Prediction()
@@ -44,8 +44,10 @@ if __name__ == "__main__":
             INFO(f"handling {e['id']} for {i}")
             if predictions is not None:
                 params = predictions[1][e["id"]][1]
+                if predictions[1][e["id"]][0]:
+                    FAIL(f"Alarm! This vechice will crash with {e['type']}({e['id']})")
                 ids = []
-                for j in range(3):
+                for j in range(4):
                     ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[1])))
                 gen.add_line(ids)
             match e["type"]:

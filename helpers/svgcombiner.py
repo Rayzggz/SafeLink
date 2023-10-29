@@ -37,7 +37,7 @@ def svg_to_gif(svg_paths, gif_path):
     os.system("cd " + str(CACHE_PATH.absolute()) + " && for file in *.svg; do inkscape \"$file\" -o \"${file%svg}png\"; done")
 
     # Create the frames
-    frames = []
+    frames: list[Image.Image] = []
     imgs = glob.glob("*.png", root_dir=svg_paths)
     for i in imgs:
         if not ("line" in i or "base" in i):
@@ -48,6 +48,6 @@ def svg_to_gif(svg_paths, gif_path):
     frames[0].save(CACHE_PATH / 'png_to_gif.gif', format='GIF',
                 append_images=frames[1:],
                 save_all=True,
-                duration=300, loop=0)
+                duration=500, loop=0)
 
     print(f'Successfully saved the gif to {gif_path}.')
