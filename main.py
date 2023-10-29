@@ -35,19 +35,16 @@ if __name__ == "__main__":
         gen.add_car(curr[0], curr[1])
         # conn.brocast(RoadEngager(curr, motion, UUID))
         # engagers = conn.recv(1/FRAME_RATE)
-        with open(Path("./data/sample_car.json"), "r") as f:
-            #!!!
-            engagers = [json.load(f, object_hook=JsonDict)[counter]]
         # print(engagers)
-        a.update_engager(engagers)
-        # re = a.predict()
+        a.update_engager(engagers + [RoadEngager(curr, motion, UUID, "car", engagers[0].time_stamp).to_dict()])
+        print(a.predict())
 
         for e in engagers:
             print(e)
             match e.type:
                 case "car":
                     gen.add_car(e.position.x, e.position.y)
-                case "bicycle":
+                case "bike":
                     gen.add_bicycle(e.position.x, e.position.y)
                 case _:
                     raise KeyError(f"Unknown type {e.type}")

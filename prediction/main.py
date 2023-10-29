@@ -15,9 +15,9 @@ class Prediction:
 
     def update_engager(self, engager: list[RoadEngager]):
         for e in engager:
-            if e.id not in self.engagers.keys():
-                self.engagers[e.id] = [None] * FRAME_RATE
-            self.engagers[e.id][self.frame % FRAME_RATE] = e
+            if e["id"] not in self.engagers.keys():
+                self.engagers[e["id"]] = [None] * FRAME_RATE
+            self.engagers[e["id"]][self.frame % FRAME_RATE] = e
         self.frame += 1
 
     def __str__(self) -> str:
@@ -46,30 +46,33 @@ class Prediction:
 
 
     def predict(self) ->tuple[list[tuple], dict[str, bool]]:
-        results = ([],{})
-        x_data = [item.position.x for item in self.engagers[UUID] if item is not None]
-        x_time = [item.time_stamp for item in self.engagers[UUID] if item is not None]
-        y_data = [item.position.y for item in self.engagers[UUID] if item is not None]
-        y_time = [item.time_stamp for item in self.engagers[UUID] if item is not None]
+        results = {}
+        print(self.engagers)
+        x_data = [float(item["position"]["x"]) for item in self.engagers[UUID] if item is not None]
+        x_time = [int(item["time_stamp"]) for item in self.engagers[UUID] if item is not None]
+        y_data = [float(item["position"]["y"]) for item in self.engagers[UUID] if item is not None]
+        y_time = [int(item["time_stamp"]) for item in self.engagers[UUID] if item is not None]
         me = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
         
 
         for _, v in self.engagers.items():
-            if v.id == UUID:
+            if len(v) == 0 or v[0]["id"] == UUID:
                 continue
-            x_data = [item.position.x for item in v if item is not None]
-            x_time = [item.time_stamp for item in v if item is not None]
-            y_data = [item.position.y for item in v if item is not None]
-            y_time = [item.time_stamp for item in v if item is not None]
+            x_data = [float(item.position.x) for item in v if item is not None]
+            x_time = [int(item.time_stamp) for item in v if item is not None]
+            y_data = [float(item.position.y) for item in v if item is not None]
+            y_time = [int(item.time_stamp) for item in v if item is not None]
             it = [self.cal_linear(x_time, x_data),self.cal_linear(y_time, y_data)]
             # determine if it will me and it will crash within 5 sec
-            for i in range(0, 5, step=0.1):# m 111320
-                lat = Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *me[0])\
-                    - Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *it[0])
-                lon = Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *me[1])\
-                    - Prediction.polynomial_fit(self.engagers[UUID][-1].time_stamp + i, *it[1])
-                results[1][v.id] = lat * LAT_LON_TO_M < LIMIT and lon * LAT_LON_TO_M < LIMIT
-        results[0] = me
-        return results
+            i = 1
+            t = int([a for a in self.engagers[UUID] if a is not None][-1]["time_stamp"])
+            while i <= 3:
+                lat = Prediction.polynomial_fit(t + i, *me[0])\
+                    - Prediction.polynomial_fit(t + i, *it[0])
+                lon = Prediction.polynomial_fit(t + i, *me[1])\
+                    - Prediction.polynomial_fit(t + i, *it[1])
+                results[v[0]["id"]] = lat * LAT_LON_TO_M < LIMIT and lon * LAT_LON_TO_M < LIMIT
+                i += 0.1
+        return me, results
         
 
