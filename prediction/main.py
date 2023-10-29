@@ -1,4 +1,4 @@
-from data import RoadEngager, Map
+from data import RoadEngager
 from helpers import OK, INFO
 from scipy.optimize import least_squares
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -8,7 +8,6 @@ from config import FRAME_RATE, CORE_NUM, UUID
 class Prediction:
     frame = 0
     engagers: dict[str, list[RoadEngager]] = {}
-    map: Map
     pool = ThreadPoolExecutor(CORE_NUM)
 
     def update_engager(self, engager: list[RoadEngager]):
@@ -44,13 +43,14 @@ class Prediction:
 
 
     def predict(self):
-        results = []
-        for k, v in self.engagers.items():
-            # 提取X和Y坐标数据
-            x_data = [item['POSITION']['X'] for item in v if item is not None]
-            y_data = [item['POSITION']['Y'] for item in v if item is not None]
+        pass
+        # results = []
+        # for k, v in self.engagers.items():
+        #     # 提取X和Y坐标数据
+        #     x_data = [item['POSITION']['X'] for item in v if item is not None]
+        #     y_data = [item['POSITION']['Y'] for item in v if item is not None]
             
-            results.append(self.pool.apply_async(self.cal_linear, (x_data, y_data)))
+        #     results.append(self.pool.apply_async(self.cal_linear, (x_data, y_data)))
 
 
 

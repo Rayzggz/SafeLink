@@ -1,6 +1,7 @@
 from pathlib import Path
 from map_machine import mapper
 from config import CACHE_PATH
+from map_machine.ui.cli import parse_arguments
 
 TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
 <osm version='0.6' generator='JOSM'>
@@ -37,11 +38,11 @@ class MapGenerator:
 
     def generate_img(self, file: str):
         (CACHE_PATH / f"{file}.osm").write_text(self.start + self.content + self.end)
-        mapper.render_map(["-i", (CACHE_PATH / f"{file}.osm").absolute(), "--level=50", "--overlap=0", "-o", (CACHE_PATH / f"{file}.svg").absolute()])
+        mapper.render_map(parse_arguments(["map_machine", "render", "-i", (CACHE_PATH / f"{file}.osm").absolute(), "--level=50", "--overlap=0", "-o", (CACHE_PATH / f"{file}.svg").absolute()]))
         assert (CACHE_PATH / f"{file}.svg").exists()
     
     def generate_base_map(self):
-        mapper.render_map(["-b", f"{self.loc[0]}, {self.loc[1]}, {self.loc[2]}, {self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{CACHE_PATH / 'base.svg'}"])
+        mapper.render_map(parse_arguments(["map_machine", "render", "-b", f"{self.loc[0]}, {self.loc[1]}, {self.loc[2]}, {self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{CACHE_PATH / 'base.svg'}"]))
         assert (CACHE_PATH / "base.svg").exists()
     def clear(self):
         self.content = ""

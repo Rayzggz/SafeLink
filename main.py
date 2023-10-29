@@ -1,12 +1,19 @@
-from data import parse_data
 from prediction import Prediction
 from extern import Communication, Indicator
 from data import RoadEngager
 from config import UUID, FRAME_RATE, CACHE_PATH
 from map import MapGenerator
+import json
+from pathlib import Path
+# delete all in folder
+from shutil import rmtree
+from data import JsonDict
+counter = 0
 
 if __name__ == "__main__":
     print("start")
+    CACHE_PATH.mkdir(exist_ok=True)
+    rmtree(CACHE_PATH)
     a = Prediction()
     conn = Communication()
     conn.start()
@@ -22,11 +29,15 @@ if __name__ == "__main__":
         curr = indicator.get_position()
         motion = indicator.get_speed()
         gen.add_car(curr[0], curr[1])
-        conn.brocast(RoadEngager(curr, motion, UUID))
-        engagers = conn.recv(1/FRAME_RATE)
+        # conn.brocast(RoadEngager(curr, motion, UUID))
+        # engagers = conn.recv(1/FRAME_RATE)
+        with open(Path("./data/sample_car.json"), "r") as f:
+            #!!!
+            engagers = [json.load(f, object_hook=JsonDict)[counter]]
+        print(engagers)
         a.update_engager(engagers)
-        re = a.predict()
-        
+        # re = a.predict()
+
         for e in engagers:
             match e.type:
                 case "car":
@@ -35,7 +46,8 @@ if __name__ == "__main__":
                     gen.add_bicycle(e.position[0], e.position[1])
                 case _:
                     raise KeyError(f"Unknown type {e.type}")
-        gen.generate_img()
+        gen.generate_img(str(counter))
+        counter += 1
 
     print(a)
 

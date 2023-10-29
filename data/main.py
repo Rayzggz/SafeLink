@@ -1,6 +1,6 @@
 from pathlib import Path
 import json
-from data.structures import RoadEngager, Map
+from data.structures import RoadEngager
 
 class JsonDict(dict):
     """
@@ -12,10 +12,3 @@ class JsonDict(dict):
 
     def __setattr__(self, attr: str, value):
         self[attr] = value
-
-def parse_data(engager_file: str, map_file: str) -> (list[RoadEngager], Map):
-    path = Path(engager_file)
-    path2 = Path(map_file)
-    assert path.exists()
-    assert path2.exists()
-    return json.loads(path.read_text(), object_hook=JsonDict), json.loads(path2.read_text(), object_hook=JsonDict)
