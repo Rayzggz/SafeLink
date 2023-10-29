@@ -24,12 +24,11 @@ if __name__ == "__main__":
     gen.generate_base_map()
     base_img = CACHE_PATH / "base.svg"
 
-    with open(Path("./data/sample_car.json"), "r") as f:
-        with open(Path("./data/sample_.json"), "r") as f:
-            #!!!
-            engagers = [json.load(f, object_hook=JsonDict)[counter]]
-
     while not indicator.is_shutdown():
+        with open(Path("./data/sample_car.json"), "r") as f:
+            with open(Path("./data/sample_bike.json"), "r") as f1:
+                #!!!
+                engagers = [json.load(f, object_hook=JsonDict)[counter], json.load(f1, object_hook=JsonDict)[counter]]
         gen.clear()
         curr = indicator.get_position()
         motion = indicator.get_speed()
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         with open(Path("./data/sample_car.json"), "r") as f:
             #!!!
             engagers = [json.load(f, object_hook=JsonDict)[counter]]
-        print(engagers)
+        # print(engagers)
         a.update_engager(engagers)
         # re = a.predict()
 
