@@ -19,7 +19,7 @@ class MapGenerator:
         self.id -= 1
         self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' /> <tag k='level' v='50' /></node>"""
 
-    def __init__(self, min_lon, min_lat, max_lon, max_lat ) -> None:
+    def __init__(self, min_lat, min_lon, max_lat, max_lon) -> None:
         self.start = f"""<?xml version='1.0' encoding='UTF-8'?>
 <osm version='0.6' generator='JOSM'>
 <bounds minlat='{min_lat}' minlon='{min_lon}' maxlat='{max_lat}' maxlon='{max_lon}' origin='CGImap 0.8.8 (1915366 spike-06.openstreetmap.org)' />"""
@@ -37,6 +37,7 @@ class MapGenerator:
     
     def generate_base_map(self):
         mapper.render_map(parse_arguments(["main.py", "render", "-b", f"{self.loc[0]},{self.loc[1]},{self.loc[2]},{self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{(CACHE_PATH / 'base.svg').absolute().__str__()}"]))
+        print(" ".join(["main.py", "render", "-b", f"{self.loc[0]},{self.loc[1]},{self.loc[2]},{self.loc[3]}", "--level=all", "--buildings=isometric", "-o", f"{(CACHE_PATH / 'base.svg').absolute().__str__()}"]))
         assert (CACHE_PATH / "base.svg").exists()
     def clear(self):
         self.content = ""
