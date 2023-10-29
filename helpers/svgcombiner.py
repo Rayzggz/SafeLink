@@ -6,7 +6,7 @@ from config import CACHE_PATH
 from PIL import Image
 import glob
 
-def svg_combine(base: Path, svg: Path, isAlert: bool) -> str:
+def svg_combine(base: Path, svg: Path, isAlert: bool=False) -> str:
     with open(base, "r") as f:
         base = f.read()
     with open(svg, "r") as f:
@@ -24,24 +24,7 @@ def svg_combine(base: Path, svg: Path, isAlert: bool) -> str:
 	V73.6z M53.1,90.3c0.2,2.7,1.7,4.1,4.4,4.1c2.7,0,4.2-1.4,4.4-4.1c-0.2-2.7-1.7-4.2-4.4-4.4C54.8,86.1,53.4,87.6,53.1,90.3
 	L53.1,90.3z" fill="#FC5143"/>"""
 
-    # Find the index where </g><text starts in the base
-    # index = base.find('</g><text')
-    # match = re.search('(<g.*/g>)', svg, re.DOTALL)
-
-    # if match is None:
-    #     index = base.find('/><text')
-    #     match = re.search('(<path.*/>)', svg, re.DOTALL)
-    # Insert the svg data at the found index
-    # combined = base[:index] + match.group(0)  + base[index:]
-    # return combined
-
-    if bgc:
-        if isAlert:
-            return head(base) + body(base) + body(svg).replace(bgc, "") + alert + tail
-        return head(base) + body(base) + body(svg).replace(bgc, "") + tail
-    if isAlert:
-        return head(base) + body(base) + body(svg) + alert + tail
-    return head(base) + body(base) + body(svg) + tail
+    return head(base) + body(base) + body(svg).replace(bgc, "") if bgc else body(svg) + alert if isAlert else "" + tail
 
 
 def svg_to_gif(svg_paths, gif_path):

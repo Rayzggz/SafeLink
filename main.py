@@ -46,12 +46,14 @@ if __name__ == "__main__":
         predictions = a.predict()
         gen.add_car(curr[0], curr[1])
         WARNING(engagers)
+        crash = False
         for e in engagers:
             INFO(f"handling {e['id']} for {i}")
             if predictions is not None:
                 params = predictions[1][e["id"]][1]
                 if predictions[1][e["id"]][0]:
                     FAIL(f"Alarm! This vechice will crash with {e['type']}({e['id']})")
+                    crash = True
                 ids = []
                 for j in range(4):
                     ids.append(gen.add_point(Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[0]), Prediction.polynomial_fit(int(e["time_stamp"][-4:])/100 + j/100, *params[1])))
@@ -64,7 +66,7 @@ if __name__ == "__main__":
                 case _:
                     raise KeyError(f"Unknown type {e.type}")
         gen.generate_img(f"{i}")
-        f = svg_combine(base_img, CACHE_PATH / f"{i}.svg")
+        f = svg_combine(base_img, CACHE_PATH / f"{i}.svg", crash)
         with open(CACHE_PATH / f"{i}.svg", "w") as f1:
             f1.write(f)
     svg_to_gif(CACHE_PATH, CACHE_PATH)
