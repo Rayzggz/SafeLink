@@ -26,7 +26,7 @@ def svg_combine(base: Path, svg: Path) -> str:
 
 
 def svg_to_gif(svg_paths, gif_path):
-    png_paths = [a for a in os.listdir(svg_paths) if a.endswith(".svg")]
+    png_paths = [svg_paths / a for a in os.listdir(svg_paths) if a.endswith(".svg")]
     
     os.system("cd " + str(CACHE_PATH.absolute()) + " && for file in *.svg; do inkscape \"$file\" -o \"${file%svg}png\"; done")
     # 读取所有的PNG图片，并存储到images列表中
