@@ -13,9 +13,10 @@ class MapGenerator:
         self.id -= 1
         self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='bicycle' v='yes' /></node>"""
         return self.id
-    def add_car(self, lat, lon):
+    def add_car(self, lat, lon, addi: dict= {}):
         self.id -= 1
-        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' /></node>"""
+        addis = "".join([f"<tag k='{k}' v='{v}' />" for k,v in addi.items()])
+        self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' />{addis}</node>"""
         return self.id
     def add_point(self, lat, lon):
         self.id -= 1

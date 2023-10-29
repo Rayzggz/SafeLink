@@ -34,9 +34,8 @@ if __name__ == "__main__":
     for i in datas:
         with open(DEMO_DATA / i, "r") as f: 
             mock_engager_data.append(json.load(f, object_hook=JsonDict))
-
-
-    for i in range(20):
+    # get median length
+    for i in range(sorted([len(a) for a in mock_engager_data])[int(len(mock_engager_data) / 2)]):
         gen.clear()
         engagers = [a[i] for a in mock_engager_data if len(a) > i]
         curr = indicator.get_position()
@@ -47,7 +46,8 @@ if __name__ == "__main__":
         # print(engagers)
         a.update_engager(engagers + [RoadEngager(curr, motion, UUID, "car", engagers[0].time_stamp).to_dict()])
         predictions = a.predict()
-        gen.add_car(curr[0], curr[1])
+        # mark our car as red
+        gen.add_car(curr[0], curr[1], {"colour": "red"})
         WARNING(engagers)
         crash = False
         for e in engagers:
