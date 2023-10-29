@@ -3,12 +3,6 @@ from map_machine import mapper
 from config import CACHE_PATH
 from map_machine.ui.cli import parse_arguments
 
-TEMPLATE = """<?xml version='1.0' encoding='UTF-8'?>
-<osm version='0.6' generator='JOSM'>
-  <bounds minlat='<MIN_LAT>' minlon='<MIN_LON>' maxlat='<MAX_LAT>' maxlon='<MAX_LON>' origin='CGImap 0.8.8 (1915366 spike-06.openstreetmap.org)' />
-<CONTENT>
-</osm>"""
-
 class MapGenerator:
     id = -25530
     start = ""
@@ -25,7 +19,7 @@ class MapGenerator:
         self.id -= 1
         self.content += f"""<node id='{self.id}' action='modify' visible='true' lat='{lat}' lon='{lon}'><tag k='car' v='yes' /> <tag k='level' v='50' /></node>"""
 
-    def __init__(self, min_lat, min_lon, max_lat, max_lon) -> None:
+    def __init__(self, min_lon, min_lat, max_lon, max_lat ) -> None:
         self.start = f"""<?xml version='1.0' encoding='UTF-8'?>
 <osm version='0.6' generator='JOSM'>
 <bounds minlat='{min_lat}' minlon='{min_lon}' maxlat='{max_lat}' maxlon='{max_lon}' origin='CGImap 0.8.8 (1915366 spike-06.openstreetmap.org)' />"""
