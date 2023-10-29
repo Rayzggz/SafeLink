@@ -2,7 +2,7 @@ class RoadEngager:
     speed: (float, float)
     position: (float, float, float)
     id: str
-    time_stamp: float
+    time_stamp: int
     type: str
     def __init__(self, position, speed, id, type,time_stamp):
         self.position = position
