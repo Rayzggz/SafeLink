@@ -1,13 +1,14 @@
 from prediction import Prediction
 from extern import Communication, Indicator
 from data import RoadEngager
-from config import UUID, CACHE_PATH
+from config import UUID, CACHE_PATH, DEMO_DATA
 from map import MapGenerator
 import json
 from pathlib import Path
 # delete all in folder
 from shutil import rmtree
 from data import JsonDict
+import glob
 from helpers import svg_combine, svg_to_gif, INFO, WARNING, OK, FAIL
 
 if __name__ == "__main__":
@@ -22,14 +23,19 @@ if __name__ == "__main__":
     loc = indicator.get_position()
     gen = MapGenerator(loc[0] - 0.001, loc[1] - 0.001, loc[0] + 0.001, loc[1] + 0.001)
     gen.generate_base_map()
+    # base map svg
     base_img = CACHE_PATH / "base.svg"
 
+    # load all mock data
+    datas = glob.glob("*.json", root_dir=DEMO_DATA)
+    mock_engager_data = []
+    for i in datas:
+        with open(DEMO_DATA / i, "r") as f: 
+            mock_engager_data.append(json.load(f, object_hook=JsonDict))
+
+
     for i in range(12):
-        gen.clear()
-        with open(Path("./data/sample_car.json"), "r") as f:
-            with open(Path("./data/sample_bike.json"), "r") as f1:
-                #!!!
-                engagers = [json.load(f, object_hook=JsonDict)[i], json.load(f1, object_hook=JsonDict)[i]]
+        engagers = [a[i] for a in mock_engager_data]
         curr = indicator.get_position()
         motion = indicator.get_speed()
         gen.add_car(curr[0], curr[1])

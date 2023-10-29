@@ -5,3 +5,4 @@ FRAME_RATE = 20
 CORE_NUM = 4
 
 CACHE_PATH = Path("cache")
+DEMO_DATA = Path("demo")
